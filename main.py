@@ -1,176 +1,148 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-'''
- * python v3.6.4
- * tkinter v8.6
- * 
- * P.S. This program is currently only for windows computer
- * if don't run as administrator, convert to *.exe then run as administrator
-'''
-
-import wmi
-import tkinter as tk
-from tkinter import messagebox, OptionMenu,StringVar,Button,Label
+import sys
+from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
+    QFormLayout, QRadioButton, QMessageBox
 
 
-def DhcpIpChanger():
-    nic = get_adapter()
-    # Enable DHCP
-    nic.EnableDHCP()
-    return True
+class MainWindow(QMainWindow):
+    selected_adapter_caption = ''
+    isDHCP = False
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Change IP - Radar Connect")
 
-def StaticIpChanger():
-    nic = get_adapter()
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
 
-    ip = entryIP.get()
-    subnetmask = entrySubnet.get()
-    gateway = entryGateway.get()
-    dns1, dns2 = entryDNS.get().split(" - ")
-    
-    # Set IP address, subnetmask and default gateway
-    # Note: EnableStatic() and SetGateways() methods require *lists* of values to be passed
-    a = nic.EnableStatic(IPAddress=[ip],SubnetMask=[subnetmask])
-    b = nic.SetGateways(DefaultIPGateway=[gateway])
-    c = nic.SetDNSServerSearchOrder([dns1, dns2])
-    ##d = nic.SetDynamicDNSRegistration(True)
-    d = nic.SetDynamicDNSRegistration(FullDNSRegistrationEnabled=1)
+        main_layout = QVBoxLayout()
+        main_widget.setLayout(main_layout)
 
-    print(a)
-    print(b)
-    print(c)
-    print(d)
-    
-    if [a[0], b[0], c[0], d[0]] == [0, 0, 0, 0]:
-##        messagebox.showinfo("Done", message="IP Succesfully Change")
-        return True
-    else:
-        errorMessage = """Return error codes are:
+        # Dropdown and Refresh Button
+        self.dropdown_label = QLabel("Choose:")
+        self.dropdown = QComboBox()
+        self.dropdown.addItems(["Option 1", "Option 2", "Option 3"])
+        self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
+        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button.clicked.connect(self.refresh_data)
 
-%s
-%s
-%s
-%s
+        # Radio Buttons
+        radio_label = QLabel("Select:")
+        self.radio1 = QRadioButton("DHCP")
+        self.radio1.toggled.connect(self.on_radio_changed)
+        self.radio2 = QRadioButton("Static")
+        self.radio2.toggled.connect(self.on_radio_changed)
 
-Detail information;
+        # Create a layout for the radio buttons
+        self.radio_layout = QVBoxLayout()
+        self.radio_layout.addWidget(self.radio1)
+        self.radio_layout.addWidget(self.radio2)
 
-https://docs.microsoft.com/windows/desktop/CIMWin32Prov/setdynamicdnsregistration-method-in-class-win32-networkadapterconfiguration
+        # Input Fields with Labels
+        input_label = QLabel("Edit static IP:")
+        self.input_labels = []
+        self.input_fields = []
+        self.default_options = ['192.168.1.11','255.255.255.0','192.168.1.1','8.8.8.8 - 8.8.4.4']
+        self.input_labels_values = ['IP','Subnetmask','Gateway','DNS']
+        for i in range(4):
+            label = QLabel(f"{self.input_labels_values[i]}:")
+            input_field = QLineEdit(f"{self.default_options[i]}")
+            self.input_fields.append(input_field)
+            self.input_labels.append(label)
 
-"""%(a[0],b[0],c[0],d[0])
-        with open("./ipchanger.txt","w") as f:
-            f.write(errorMessage)
-        messagebox.showwarning("Error", message="Error description in 'ipchanger.txt'")
-        return False
+        # Submit Button
+        self.submit_button = QPushButton("Change")
+        self.submit_button.clicked.connect(self.submit_form)
 
-def IpChanger():
-    if varRadio.get() == "dhcp":
-        if DhcpIpChanger():
-            messagebox.showinfo("Done", message="IP Succesfully Change")
-    else:
-        if StaticIpChanger():
-            messagebox.showinfo("Done", message="IP Succesfully Change")
+        # Set up the main layout
+        main_layout.addWidget(self.dropdown_label)
+        main_layout.addWidget(self.dropdown)
+        main_layout.addWidget(self.refresh_button)
 
-def TrackRadioButton():
-    if varRadio.get() == "dhcp":
-        entryIP["state"] = "disable"
-        entrySubnet["state"] = "disable"
-        entryGateway["state"] = "disable"
-        entryDNS["state"] = "disable"
-    else:
-        entryIP["state"] = "normal"
-        entrySubnet["state"] = "normal"
-        entryGateway["state"] = "normal"
-        entryDNS["state"] = "normal"
+        main_layout.addWidget(radio_label)
+        main_layout.addLayout(self.radio_layout)
 
-def get_adapter():
-    nic_configs = wmi.WMI().Win32_NetworkAdapterConfiguration(IPEnabled=True)
-    for adapter in nic_configs:
-        if adapter.Caption == adapted_text.get():
-            print(adapter.DHCPEnabled)
-            return adapter
+        self.form_layout = QFormLayout()
+        self.form_layout.addRow(input_label)
+        for label, input_field in zip(self.input_labels, self.input_fields):
+            self.form_layout.addRow(label, input_field)
+        main_layout.addLayout(self.form_layout)
+        main_layout.addWidget(self.submit_button)
 
-def adapted_choose():
-    adapted_label.config( text = adapted_text.get() )
-    print('Choose: ', get_adapter().Caption)
-    
+        self.radio1.toggle()
+        self.refresh_data()
 
-# main part
-top = tk.Tk()
-top.geometry("260x450+100+100")
-top.title("IP Changer")
-top.resizable(False, False)
+    def on_dropdown_change(self, index):
+        print('on_dropdown_change')
+        selected_option = self.dropdown.currentText()
+        self.dropdown_label.setText(f"Chosen: {selected_option}")
+        self.selected_adapter_caption = selected_option
 
-c = wmi.WMI()
-adapters = []
-adapter_options = []
+        set_selected_adapter(self.get_selected_adapter())
 
-for nic in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-    adapters.append(nic)
-    adapter_options.append(nic.Caption)
-    print(nic.Caption)
+    def get_selected_adapter(self):
+        return get_adapter(self.selected_adapter_caption)
 
-adapted_text = StringVar()
-  
-# initial menu text
-adapted_text.set( "none" )
-  
-drop = OptionMenu(top, adapted_text, *adapter_options )
-drop.pack()
+    def refresh_data(self):
+        # Add code here to refresh data
+        print('refresh')
+        get_adapters()
 
-# Create button, it will change label text
-button = Button( top , text = "Choose" , command = adapted_choose ).pack()
+        self.change_dropdown_items(get_adapters_name())
+        adapter = get_adapter(self.selected_adapter_caption)
 
-# Create Label
-adapted_label = Label( top , text = "none" )
-adapted_label.pack()
+        if adapter.DHCPEnabled:
+            self.radio1.toggle()
+        else:
+            self.radio2.toggle()
 
-varRadio = tk.StringVar()
-radio1 = tk.Radiobutton(top, text="DHCP", variable=varRadio,
-                             value="dhcp", command=TrackRadioButton)
-radio1.pack()
-tk.Label(text="_"*44, fg="#888888").pack(pady=5)
+    def show_popup(self, status):
+        popup = QMessageBox()
+        popup.setWindowTitle("Change IP Status")
+        if status:
+            popup.setText("Successfully changed!")
+            popup.setIcon(QMessageBox.Information)
+        else:
+            popup.setText("Some error occurred.")
+            popup.setIcon(QMessageBox.Warning)
+        popup.exec_()
+    def submit_form(self):
+        print('update ip')
+        static_options = []
+        for field in self.input_fields:
+            static_options.append(field.text())
 
-radio2 = tk.Radiobutton(top, text="Static", variable=varRadio,
-                             value="static", command=TrackRadioButton)
-radio2.pack()
-varRadio.set("dhcp")
+        print(static_options)
+        status = ChangeIP(self.isDHCP, static_options)
+        self.show_popup(status)
 
-# IP entry
-tk.Label(text="IP").pack()
-entryIP = tk.Entry(top)
-entryIP.pack()
-# c = wmi.WMI()
-# for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=1):
-#     for ip_address in interface.IPAddress:
-#         entryIP.insert(0, ip_address) if len(ip_address)<15 else entryIP.insert(0, "")
+    def on_radio_changed(self):
+        print('on_radio_changed')
+        option:QRadioButton = self.sender()
+        if option.isChecked():
+            if option.text() == 'DHCP':
+                self.isDHCP = True
+            else:
+                self.isDHCP = False
+            print(option.text())
+            print(self.isDHCP)
+            self.set_static_options_enabled()
 
-entryIP.insert(0, "192.168.1.11")
+    def set_static_options_enabled(self):
+        print('set_static_options_enabled')
+        if self.isDHCP:
+            for field in self.input_fields:
+                field.setDisabled(True)
+        else:
+            for field in self.input_fields:
+                field.setDisabled(False)
 
-# subnetmask entry
-tk.Label(text="\nSubnetmask").pack()
-entrySubnet = tk.Entry(top)
-entrySubnet.pack()
-entrySubnet.insert(0, "255.255.255.0")
+    def change_dropdown_items(self, new_items):
+        self.dropdown.clear()  # Clear existing items
+        self.dropdown.addItems(new_items)  # Add new items
 
-# gateway entry
-tk.Label(text="\nGateway").pack()
-entryGateway = tk.Entry(top)
-entryGateway.pack()
-entryGateway.insert(0, "192.168.1.1")
 
-# dns entry
-tk.Label(text="\nDNS").pack()
-entryDNS = tk.Entry(top)
-entryDNS.pack()
-entryDNS.insert(0, "8.8.8.8 - 8.8.4.4")
-
-tk.Label(text=" ").pack()
-
-btnOK = tk.Button(top, text="Change", command=IpChanger)
-btnOK.pack()
-
-tk.Label(text=" ").pack()
-
-TrackRadioButton()
-
-top.mainloop()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
