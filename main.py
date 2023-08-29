@@ -119,6 +119,9 @@ class MainWindow(QMainWindow):
 
         set_selected_adapter(self.get_selected_adapter())
 
+    def close_window(self):
+        self.close()
+
     def get_selected_adapter(self):
         return get_adapter(self.selected_adapter_caption)
 
