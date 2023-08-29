@@ -3,7 +3,7 @@ import re
 from PyQt5.QtCore import Qt, QPoint
 from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
-    QFormLayout, QRadioButton, QMessageBox
+    QFormLayout, QRadioButton, QMessageBox, QDesktopWidget, QSizePolicy, QHBoxLayout
 
 
 class MainWindow(QMainWindow):
