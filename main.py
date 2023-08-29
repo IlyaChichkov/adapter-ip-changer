@@ -18,8 +18,26 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         main_widget.setLayout(main_layout)
 
+        self.titleLayout = QHBoxLayout()
+        self.title_label = QLabel("IP Changer")
+        self.title_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.title_label.setStyleSheet("font-size: 18px;")
+
+        self.close_button = QPushButton("Close")
+        self.close_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.close_button.setStyleSheet("width: 10px"
+                                        "padding: 2px 2px")
+        self.close_button.clicked.connect(self.close_window)
+
+        self.titleLayout.addWidget(self.title_label)
+        self.titleLayout.addWidget(self.close_button)
+
         # Dropdown and Refresh Button
         self.dropdown_label = QLabel("Choose:")
+        self.dropdown_label.setStyleSheet("margin-top: 10px;")
+        self.dropdown_label.setWordWrap(True)
+
         self.dropdown = QComboBox()
         self.dropdown.addItems(["Option 1", "Option 2", "Option 3"])
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
@@ -55,6 +73,7 @@ class MainWindow(QMainWindow):
         self.submit_button.clicked.connect(self.submit_form)
 
         # Set up the main layout
+        main_layout.addLayout(self.titleLayout)
         main_layout.addWidget(self.dropdown_label)
         main_layout.addWidget(self.dropdown)
         main_layout.addWidget(self.refresh_button)
