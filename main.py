@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         selected_option = self.dropdown.currentText()
         val = 'None'
         if selected_option != '':
-            val = (str(selected_option[0: 40]).split(']')[1].strip())
+            val = (str(selected_option[0: 40]))
             if len(selected_option) > 40:
                 val += '...'
         self.dropdown_label.setText(f"Selected: {val}")
