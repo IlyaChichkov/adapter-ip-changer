@@ -1,5 +1,6 @@
 import sys
 import re
+from PyQt5.QtCore import Qt, QPoint
 from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
     QFormLayout, QRadioButton, QMessageBox
@@ -90,7 +91,21 @@ class MainWindow(QMainWindow):
 
         self.radio1.toggle()
         self.refresh_data()
+        self.center()
+        self.oldPos = self.pos()
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
+    def mousePressEvent(self, event):
+        self.oldPos = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+        delta = QPoint(event.globalPos() - self.oldPos)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.oldPos = event.globalPos()
     def on_dropdown_change(self, index):
         print('on_dropdown_change')
         selected_option = self.dropdown.currentText()
