@@ -168,5 +168,10 @@ def dropdown_labels_filter(input_text):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint )
+    qss="style.qss"
+    with open(qss, "r") as fh:
+        window.setStyleSheet(fh.read())
+
     window.show()
     sys.exit(app.exec_())

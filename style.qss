@@ -1,0 +1,40 @@
+QPushButton {
+    background-color: #555;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 8px 12px;
+    font-weight: 700;
+
+}
+
+QLineEdit {
+    background-color: #555;
+    color: #fff;
+    border: none;
+}
+QLineEdit:disabled {
+    background-color: #444;
+    color: #222;
+}
+
+QPushButton:pressed {
+    background-color: #666;
+}
+
+QComboBox {
+    background-color: #555;
+    color: #fff;
+}
+
+QLabel {
+    color: #fff;
+}
+
+QMainWindow {
+    background-color: #333;
+}
+
+QRadioButton {
+    color: #fff;
+}
