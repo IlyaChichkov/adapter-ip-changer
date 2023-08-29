@@ -74,7 +74,12 @@ class MainWindow(QMainWindow):
     def on_dropdown_change(self, index):
         print('on_dropdown_change')
         selected_option = self.dropdown.currentText()
-        self.dropdown_label.setText(f"Chosen: {selected_option}")
+        val = 'None'
+        if selected_option != '':
+            val = (str(selected_option[0: 40]).split(']')[1].strip())
+            if len(selected_option) > 40:
+                val += '...'
+        self.dropdown_label.setText(f"Selected: {val}")
         self.selected_adapter_caption = selected_option
 
         set_selected_adapter(self.get_selected_adapter())
