@@ -41,7 +41,7 @@ def StaticIpChanger(static_options):
 def get_adapter(adapted_text):
     nic_configs = wmi_inst.Win32_NetworkAdapterConfiguration(IPEnabled=True)
     for adapter in nic_configs:
-        if adapter.Caption == adapted_text:
+        if str(adapter.Caption).__contains__(adapted_text):
             print(adapter.DHCPEnabled)
             return adapter
     return None

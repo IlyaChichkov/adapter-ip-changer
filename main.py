@@ -96,6 +96,9 @@ class MainWindow(QMainWindow):
         self.change_dropdown_items(get_adapters_name())
         adapter = get_adapter(self.selected_adapter_caption)
 
+        if adapter is None:
+            return
+
         if adapter.DHCPEnabled:
             self.radio1.toggle()
         else:
