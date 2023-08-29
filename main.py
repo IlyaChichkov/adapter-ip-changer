@@ -1,4 +1,5 @@
 import sys
+import re
 from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
     QFormLayout, QRadioButton, QMessageBox
@@ -143,8 +144,23 @@ class MainWindow(QMainWindow):
 
     def change_dropdown_items(self, new_items):
         self.dropdown.clear()  # Clear existing items
-        self.dropdown.addItems(new_items)  # Add new items
+        print('new_items: ', new_items)
+        dropdown_items = []
+        for item in new_items:
+            regex = dropdown_labels_filter(item)
+            ignore, name = regex[0]
+            print('regex: ', regex)
+            if(len(regex[0]) > 1):
+                print('regex: ', name)
+                dropdown_items.append(name)
+            else:
+                dropdown_items.append(item)
+        self.dropdown.addItems(dropdown_items)  # Add new items
 
+
+def dropdown_labels_filter(input_text):
+    found = re.findall(r"^(\[[^\]]+\])?(.*)$", input_text)
+    return found
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
