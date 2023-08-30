@@ -31,17 +31,13 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         main_widget.setLayout(main_layout)
 
-        self.titleLayout = QHBoxLayout()
-        self.title_label = QLabel("IP Changer")
-        self.title_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setStyleSheet("font-size: 18px;")
-
+        # Minimize button
         self.min_button = QPushButton("")
         self.min_button.setIcon(QIcon(os.path.join(basedir, 'icons', 'minimize-window-32.png')))
         self.min_button.clicked.connect(self.showMinimized)
         self.min_button.setFixedSize(32, 32)
 
+        # Close button
         self.close_button = QPushButton("")
         self.close_button.setIcon(QIcon(os.path.join(basedir, 'icons', 'cancel-32.png')))
         # self.close_button.setIconSize(QSize(200,200))
@@ -50,31 +46,45 @@ class MainWindow(QMainWindow):
         self.close_button.clicked.connect(self.close_window)
         self.close_button.setFixedSize(32, 32)
 
+        # Title Layout
+        self.titleLayout = QHBoxLayout()
+        self.title_label = QLabel("IP Changer")
+        self.title_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.title_label.setAlignment(Qt.AlignCenter)
+        self.title_label.setStyleSheet("font-size: 18px;")
+
         self.titleLayout.addWidget(self.title_label)
         self.titleLayout.addWidget(self.min_button)
         self.titleLayout.addWidget(self.close_button)
 
-        self.adapterSelectionLayout = QHBoxLayout()
+        # Splitter
         self.splitter = QSplitter()
         self.splitter.setStyleSheet("background: red;")
-        # Dropdown and Refresh Button
+        # Dropdown selected label
         self.dropdown_label = QLabel("Choose:")
         self.dropdown_label.setStyleSheet("margin-top: 10px;")
         self.dropdown_label.setWordWrap(True)
 
+        # Dropdown
         self.dropdown = QComboBox()
         self.dropdown.addItems(["Option 1", "Option 2", "Option 3"])
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
         self.dropdown.setStyleSheet("padding: 8px 2px")
+        # Refresh button
         self.refresh_button = QPushButton("")
         self.refresh_button.setIcon(QIcon(os.path.join(basedir, 'icons', 'refresh-32.png')))
         self.refresh_button.setFixedSize(32, 32)
         self.refresh_button.setStyleSheet("padding: 0px 0px")
         self.refresh_button.clicked.connect(self.refresh_data)
 
+        # Dropdown Layout
+        self.adapterSelectionLayout = QHBoxLayout()
+
         self.adapterSelectionLayout.addWidget(self.dropdown)
         self.adapterSelectionLayout.addWidget(self.refresh_button)
 
+        # Radio Buttons Layout
+        self.adapterSelectionLayout = QHBoxLayout()
         # Radio Buttons
         radio_label = QLabel("Select:")
         self.radio1 = QRadioButton("DHCP")
