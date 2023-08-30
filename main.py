@@ -1,6 +1,6 @@
 import sys
 import re
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint, QSize
 from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
     QFormLayout, QRadioButton, QMessageBox, QDesktopWidget, QSizePolicy, QHBoxLayout
@@ -25,13 +25,22 @@ class MainWindow(QMainWindow):
         self.title_label.setAlignment(Qt.AlignCenter)
         self.title_label.setStyleSheet("font-size: 18px;")
 
-        self.close_button = QPushButton("Close")
-        self.close_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.close_button.setStyleSheet("width: 10px"
+        self.min_button = QPushButton("")
+        self.min_button.setIcon(QIcon('minimize-window-32.png'))
+        self.min_button.clicked.connect(self.showMinimized)
+        self.min_button.setFixedSize(32, 32)
+
+        self.close_button = QPushButton("")
+        self.close_button.setIcon(QIcon('cancel-32.png'))
+        # self.close_button.setIconSize(QSize(200,200))
+        self.close_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.close_button.setStyleSheet("width: 2px"
                                         "padding: 2px 2px")
         self.close_button.clicked.connect(self.close_window)
+        self.close_button.setFixedSize(32, 32)
 
         self.titleLayout.addWidget(self.title_label)
+        self.titleLayout.addWidget(self.min_button)
         self.titleLayout.addWidget(self.close_button)
 
         # Dropdown and Refresh Button
