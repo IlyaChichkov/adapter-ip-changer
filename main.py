@@ -54,6 +54,7 @@ class MainWindow(QMainWindow):
         self.titleLayout.addWidget(self.min_button)
         self.titleLayout.addWidget(self.close_button)
 
+        self.adapterSelectionLayout = QHBoxLayout()
         # Dropdown and Refresh Button
         self.dropdown_label = QLabel("Choose:")
         self.dropdown_label.setStyleSheet("margin-top: 10px;")
@@ -62,8 +63,15 @@ class MainWindow(QMainWindow):
         self.dropdown = QComboBox()
         self.dropdown.addItems(["Option 1", "Option 2", "Option 3"])
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_change)
-        self.refresh_button = QPushButton("Refresh")
+        self.dropdown.setStyleSheet("padding: 8px 2px")
+        self.refresh_button = QPushButton("")
+        self.refresh_button.setIcon(QIcon(os.path.join(basedir, 'icons', 'refresh-32.png')))
+        self.refresh_button.setFixedSize(32, 32)
+        self.refresh_button.setStyleSheet("padding: 0px 0px")
         self.refresh_button.clicked.connect(self.refresh_data)
+
+        self.adapterSelectionLayout.addWidget(self.dropdown)
+        self.adapterSelectionLayout.addWidget(self.refresh_button)
 
         # Radio Buttons
         radio_label = QLabel("Select:")
@@ -90,14 +98,13 @@ class MainWindow(QMainWindow):
             self.input_labels.append(label)
 
         # Submit Button
-        self.submit_button = QPushButton("Change")
+        self.submit_button = QPushButton("Apply")
         self.submit_button.clicked.connect(self.submit_form)
 
         # Set up the main layout
         main_layout.addLayout(self.titleLayout)
         main_layout.addWidget(self.dropdown_label)
-        main_layout.addWidget(self.dropdown)
-        main_layout.addWidget(self.refresh_button)
+        main_layout.addLayout(self.adapterSelectionLayout)
 
         main_layout.addWidget(radio_label)
         main_layout.addLayout(self.radio_layout)
