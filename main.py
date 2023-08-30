@@ -83,17 +83,16 @@ class MainWindow(QMainWindow):
         self.adapterSelectionLayout.addWidget(self.dropdown)
         self.adapterSelectionLayout.addWidget(self.refresh_button)
 
-        # Radio Buttons Layout
-        self.adapterSelectionLayout = QHBoxLayout()
         # Radio Buttons
-        radio_label = QLabel("Select:")
+        self.radio_label = QLabel("Select:")
         self.radio1 = QRadioButton("DHCP")
         self.radio1.toggled.connect(self.on_radio_changed)
         self.radio2 = QRadioButton("Static")
         self.radio2.toggled.connect(self.on_radio_changed)
 
         # Create a layout for the radio buttons
-        self.radio_layout = QVBoxLayout()
+        self.radio_layout = QHBoxLayout()
+        self.radio_layout.addWidget(self.radio_label)
         self.radio_layout.addWidget(self.radio1)
         self.radio_layout.addWidget(self.radio2)
 
@@ -118,7 +117,6 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.splitter)
         main_layout.addLayout(self.adapterSelectionLayout)
 
-        main_layout.addWidget(radio_label)
         main_layout.addLayout(self.radio_layout)
 
         self.form_layout = QFormLayout()
