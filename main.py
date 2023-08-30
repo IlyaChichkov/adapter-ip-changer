@@ -1,3 +1,4 @@
+import os
 import sys
 import re
 from PyQt5.QtCore import Qt, QPoint, QSize
@@ -7,6 +8,14 @@ from adapter_config import get_adapters, get_adapters_name, get_adapter, set_sel
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
     QFormLayout, QRadioButton, QMessageBox, QDesktopWidget, QSizePolicy, QHBoxLayout
 
+basedir = os.path.dirname(__file__)
+
+try:
+    from ctypes import windll  # Only exists on Windows.
+    myappid = 'mycompany.myproduct.subproduct.version'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except ImportError:
+    pass
 
 class MainWindow(QMainWindow):
     selected_adapter_caption = ''
@@ -15,6 +24,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Change IP - Radar Connect")
 
+        print(os.path.join(basedir, 'icons', 'minimize-window-32.png'))
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
 
@@ -28,16 +38,15 @@ class MainWindow(QMainWindow):
         self.title_label.setStyleSheet("font-size: 18px;")
 
         self.min_button = QPushButton("")
-        self.min_button.setIcon(QIcon('minimize-window-32.png'))
+        self.min_button.setIcon(QIcon(os.path.join(basedir, 'icons', 'minimize-window-32.png')))
         self.min_button.clicked.connect(self.showMinimized)
         self.min_button.setFixedSize(32, 32)
 
         self.close_button = QPushButton("")
-        self.close_button.setIcon(QIcon('cancel-32.png'))
+        self.close_button.setIcon(QIcon(os.path.join(basedir, 'icons', 'cancel-32.png')))
         # self.close_button.setIconSize(QSize(200,200))
         self.close_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.close_button.setStyleSheet("width: 2px"
-                                        "padding: 2px 2px")
+        self.close_button.setStyleSheet("padding: 2px 2px")
         self.close_button.clicked.connect(self.close_window)
         self.close_button.setFixedSize(32, 32)
 
@@ -217,10 +226,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint )
-    qss="style.qss"
-    with open(qss, "r") as fh:
+    styles_path = os.path.join(basedir, 'styles', 'style.qss')
+    with open(styles_path, "r") as fh:
         window.setStyleSheet(fh.read())
 
-    window.setWindowIcon(QIcon("app-icon.png"))
+    window.setWindowIcon(QIcon(os.path.join(basedir, 'icons', 'app-icon.png')))
     window.show()
     sys.exit(app.exec_())
