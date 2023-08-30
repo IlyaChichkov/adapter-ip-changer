@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon
 
 from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
-    QFormLayout, QRadioButton, QMessageBox, QDesktopWidget, QSizePolicy, QHBoxLayout
+    QFormLayout, QRadioButton, QMessageBox, QDesktopWidget, QSizePolicy, QHBoxLayout, QSplitter
 
 basedir = os.path.dirname(__file__)
 
@@ -55,6 +55,8 @@ class MainWindow(QMainWindow):
         self.titleLayout.addWidget(self.close_button)
 
         self.adapterSelectionLayout = QHBoxLayout()
+        self.splitter = QSplitter()
+        self.splitter.setStyleSheet("background: red;")
         # Dropdown and Refresh Button
         self.dropdown_label = QLabel("Choose:")
         self.dropdown_label.setStyleSheet("margin-top: 10px;")
@@ -103,7 +105,7 @@ class MainWindow(QMainWindow):
 
         # Set up the main layout
         main_layout.addLayout(self.titleLayout)
-        main_layout.addWidget(self.dropdown_label)
+        main_layout.addWidget(self.splitter)
         main_layout.addLayout(self.adapterSelectionLayout)
 
         main_layout.addWidget(radio_label)
