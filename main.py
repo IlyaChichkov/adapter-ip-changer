@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         self.radio_layout.addWidget(self.radio2)
 
         # Input Fields with Labels
-        input_label = QLabel("Edit static IP:")
+        input_label = QLabel("Static configuration:")
         self.input_labels = []
         self.input_fields = []
         self.default_options = ['192.168.1.11','255.255.255.0','192.168.1.1','8.8.8.8 - 8.8.4.4']
