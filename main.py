@@ -1,6 +1,8 @@
 import sys
 import re
 from PyQt5.QtCore import Qt, QPoint, QSize
+from PyQt5.QtGui import QIcon
+
 from adapter_config import get_adapters, get_adapters_name, get_adapter, set_selected_adapter, ChangeIP
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QComboBox, QLineEdit, QVBoxLayout, QWidget, \
     QFormLayout, QRadioButton, QMessageBox, QDesktopWidget, QSizePolicy, QHBoxLayout
@@ -219,5 +221,6 @@ if __name__ == "__main__":
     with open(qss, "r") as fh:
         window.setStyleSheet(fh.read())
 
+    window.setWindowIcon(QIcon("app-icon.png"))
     window.show()
     sys.exit(app.exec_())
